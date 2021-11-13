@@ -17,22 +17,63 @@ def get_coluna(tab, n):
     for a in range(0,len(tab)):
         col.append(tab[a][n])
      
-    print(col)    
+
     return col
 
+def get_celula(tab, l1,c1):
+    cel = []
+         
+    if 0<l1<3:
+        il = 0 
+        jl = 3
+    if 0<c1<3:
+        ic = 0 
+        jc = 3
+    if 3<=l1<6:
+        il = 3 
+        jl = 6
         
+    if 3<=c1<6:
+        ic = 3 
+        jc = 6
     
+    if 6<l1<=8:
+        il = 6 
+        jl = 9
+        
+    if 6<c1<=8:
+        ic = 6 
+        jc = 9
+        
+    for a in range(il,jl):
+        for b in range(ic,jc):
+            cel.append(tab[a][b])
+     
+    print(cel)
+    return cel
+   
+get_celula(A,5,5)
     
 
-def code(tab):
+def solver(tab):
     
-    i = 1
     for a in range(0, len(tab)):
+        i = 1
+        
         for b in range(0, len(tab)):
-            if tab[a][b] == 0 and (i not in tab[a]) and i not in get_coluna(tab,b) :
-                tab[a][b] = i
-            else:
-                i += 1
+            
+            if ((tab[a][b] == 0)):
+                print(tab[a])
+                
+                while (i in tab[a]) or (i in get_coluna(tab,a)) or (i in get_celula(tab,a,b)) :
+                    
+                    i+=1    
+                
+                if (i <= 9):
+                    tab[a][b] = i
+                    i = 1
+                    
+
     return tab
     
                 
@@ -72,5 +113,5 @@ def get_tabuleiro(tab):
     return puzzle
 
     
-get_tabuleiro(A)
-get_coluna(A,3)
+#lsd = solver(A) 
+#get_tabuleiro(lsd)
