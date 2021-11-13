@@ -16,19 +16,35 @@ A = [[5,1,7,6,0,0,0,3,4],
 
 
 def get_tabuleiro(tab):
- puzzle = ''
- state = False
- for a in range(0, len(tab)):
-    if state:
-        puzzle = puzzle + '\n-----------\n'
-    state = True
-    for b in range(0, len(tab)):
-        
-        if tab[a][b] == 0:
-            puzzle = puzzle + '   ' + '|'
+    puzzle = ''
+    state = False
+    for a in range(0, len(tab)):
+        if state and ((a) % 3 == 0 and a != 0):
+            
+            puzzle = puzzle + '\n--------------------------------\n'
+            
+        elif state:
+            
+            puzzle = puzzle + '\n'
+            
+        state = True
+        for b in range(0, len(tab)):
+            if ((b+1) % 3 == 0 and b != 0):
                 
-        elif  tab[a][b] != 0:
-            puzzle = puzzle + str(tab[a][b]) + '|'
+                if tab[a][b] == 0:
+                    puzzle = puzzle + ' 0' + ' | '
+                        
+                elif  tab[a][b] != 0:
+                    puzzle = puzzle + ' ' + str(tab[a][b]) + ' | '
+            else:
+                
+                if tab[a][b] == 0:
+                        puzzle = puzzle + ' 0' + ' '
+                        
+                elif  tab[a][b] != 0:
+                    puzzle = puzzle + ' ' + str(tab[a][b]) + ' '
+    print(puzzle)
     return puzzle
+
     
 get_tabuleiro(A)
