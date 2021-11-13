@@ -1,2 +1,2 @@
 main(int i)
-    return i
+    return i+1
