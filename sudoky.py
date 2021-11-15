@@ -2,6 +2,7 @@
 from random import seed
 from random import randint
 
+#Função responsável por retornar a coluna atual
 def get_coluna(tab, n):
     col = []
     for a in range(0,len(tab)):
@@ -10,6 +11,7 @@ def get_coluna(tab, n):
 
     return col
 
+#Função responsável por retornar a celula atual
 def get_celula(tab, l1,c1):
     cel = []
     il = 0
@@ -47,13 +49,15 @@ def get_celula(tab, l1,c1):
    
 #get_celula(A,5,5)
 
+#Função responsável concluir se é possível ou não colocar um número de 0 a 9 numa certa entrada do grid
 def is_safe(grid,row,col,n):
     
     if (n not in grid[row]) and (n not in get_coluna(grid,col)) and (n not in get_celula(grid,row,col)) :
         return True
     else:
         return False
-    
+
+#Verifica se existe um zero no grid, ou seja, um lugar no grid que ainda não foi preenchido
 def empty_spot(grid,l):
     
     for row in range(0, len(grid)):
@@ -64,32 +68,40 @@ def empty_spot(grid,l):
                 return True
     return False     
    
-
+#Função que resolve o sudoko
 def solver(tab):
     
-    l =[0, 0]
+    l =[0, 0] #Inicialização do indice das linhas e das colunas
     
     if (empty_spot(tab,l) == False):
         return True
     
-    row = l[0]
-    col = l[1]  
+    row = l[0] #guarda o indice das linhas através da função empty_spot
+    col = l[1] #guarda o indice das colunas através da função empty_spot
     
-    for i in range(1, 10):
+    for i in range(1, 10): #i é número de 0 a 9
 
-            if is_safe(tab,row,col,i) :
+            if is_safe(tab,row,col,i) : #Verifica se o número i passa nas 
+                #condições básicas do jogo do Sudoko: ser único na linha, na coluna e na célula
                     
-                tab[row][col] = i   
+                tab[row][col] = i   #Caso passe nas condições acima, coloca esse número i na entrada row,col do grid e depois 
+                #chama-se a função solver() de novo com o grid atualizado para esta entrada row col e tenta-se preencher 
+                # a próxima entrada que esteja a zero até ver se é possível preencher todo o grid.
+                
+                #Caso se chegue a um "dead end" em que fiquem zeros por preencher e já não é possível cumprir as regras, 
+                #repete-se o processo todo de novo porque na linha 98 se dá um reset na entrada inicial desta tentativa de grid resolvido e 
+                #como isto é um loop for, logo a próxima tentativa será diferente e serão tentadas todas as possibilidades.
         
-                if(solver(tab)):
+                if(solver(tab)): #Recursiva ocorre,até que um grid seja preenchido sem deixar 
+                #zeros e onde se cumprem as regras básicas do jogo
                     return True
                 
-                tab[row][col] = 0
+                tab[row][col] = 0 #Isto executa o backtracking 
              
         
     return False
                
-
+#Função que dá print do resultado obtido na função solver
 def get_tabuleiro(tab):
     puzzle = ''
     state = False
