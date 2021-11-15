@@ -2,16 +2,6 @@
 from random import seed
 from random import randint
 
-A = [[5,1,7,6,0,0,0,3,4],
-     [2,8,9,0,0,4,0,0,0],
-     [3,4,6,2,0,5,0,9,0],
-     [6,0,2,0,0,0,0,1,0],
-     [0,3,8,0,0,6,0,4,7],
-     [0,0,0,0,0,0,0,0,0],
-     [0,9,0,0,0,0,0,7,8],
-     [7,0,3,4,0,0,5,6,0],
-     [0,0,0,0,0,0,0,0,0]]
-
 def get_coluna(tab, n):
     col = []
     for a in range(0,len(tab)):
@@ -56,31 +46,49 @@ def get_celula(tab, l1,c1):
     return cel
    
 #get_celula(A,5,5)
+
+def is_safe(grid,row,col,n):
     
+    if (n not in grid[row]) and (n not in get_coluna(grid,col)) and (n not in get_celula(grid,row,col)) :
+        return True
+    else:
+        return False
+    
+def empty_spot(grid,l):
+    
+    for row in range(0, len(grid)):
+        for col in range(0, len(grid)):
+            if (grid[row][col] == 0):
+                l[0]= row
+                l[1]= col
+                return True
+    return False     
+   
 
 def solver(tab):
     
-    for a in range(0, len(tab)):
-        i = 1
-        
-        for b in range(0, len(tab)):
-            
-            
-            if ((tab[a][b] == 0)):
-                
-                while (i in tab[a]) or (i in get_coluna(tab,b)) or (i in get_celula(tab,a,b)) :
-                    i+=1    
-                
-                if (i <= 9):
-                    tab[a][b] = i
-                    i = 1
-                    
-
-    return tab
+    l =[0, 0]
     
-                
-            
+    if (empty_spot(tab,l) == False):
+        return True
+    
+    row = l[0]
+    col = l[1]  
+    
+    for i in range(1, 10):
 
+            if is_safe(tab,row,col,i) :
+                    
+                tab[row][col] = i   
+        
+                if(solver(tab)):
+                    return True
+                
+                tab[row][col] = 0
+             
+        
+    return False
+               
 
 def get_tabuleiro(tab):
     puzzle = ''
@@ -114,5 +122,24 @@ def get_tabuleiro(tab):
     return puzzle
 
     
-lsd = solver(A) 
-get_tabuleiro(lsd)
+#lsd = solver(A) 
+#get_tabuleiro(lsd)
+
+if __name__=="__main__":
+    
+    A =[[0 for x in range(9)]for y in range(9)]
+    
+    A = [[5,1,7,6,0,0,0,3,4],
+     [2,0,9,0,0,4,0,0,0],
+     [3,4,6,2,0,5,0,9,0],
+     [6,0,2,0,0,0,0,1,0],
+     [0,3,8,0,0,6,0,4,7],
+     [0,0,0,0,0,0,0,0,0],
+     [0,9,0,0,0,0,0,7,8],
+     [7,0,3,4,0,0,5,6,0],
+     [0,0,0,0,0,0,0,0,0]]
+      
+    if(solver(A)):
+            get_tabuleiro(A)
+    else:
+            print("No solution exists")
