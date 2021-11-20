@@ -2,8 +2,9 @@
 from random import seed
 from random import randint
 import random
+import copy
 
-#Função responsável por retornar a coluna atual
+#Funcao responsavel por retornar a coluna atual
 def get_coluna(tab, n):
     col = []
     for a in range(0,len(tab)):
@@ -12,7 +13,7 @@ def get_coluna(tab, n):
 
     return col
 
-#Função responsável por retornar a celula atual
+#Funcao responsavel por retornar a celula atual
 def get_celula(tab, l1,c1):
     cel = []
     il = 0
@@ -50,7 +51,7 @@ def get_celula(tab, l1,c1):
    
 #get_celula(A,5,5)
 
-#Função responsável concluir se é possível ou não colocar um número de 0 a 9 numa certa entrada do grid
+#Funcao responsavel concluir se e possivel ou nao colocar um numero de 0 a 9 numa certa entrada do grid
 def is_safe(grid,row,col,n):
     
     if (n not in grid[row]) and (n not in get_coluna(grid,col)) and (n not in get_celula(grid,row,col)) :
@@ -58,7 +59,7 @@ def is_safe(grid,row,col,n):
     else:
         return False
 
-#Verifica se existe um zero no grid, ou seja, um lugar no grid que ainda não foi preenchido
+#Verifica se existe um zero no grid, ou seja, um lugar no grid que ainda nao foi preenchido
 def empty_spot(grid,l):
     
     for row in range(0, len(grid)):
@@ -69,34 +70,34 @@ def empty_spot(grid,l):
                 return True
     return False     
  
-#Função que resolve o sudoko
+#Funcao que resolve o sudoko
 def solver(tab,i=[0]):
 
     i[0]+=1
 
-    l =[0, 0] #Inicialização do indice das linhas e das colunas
+    l =[0, 0] #Inicializacao do indice das linhas e das colunas
     
     if (empty_spot(tab,l) == False):
         return True
     
-    row = l[0] #guarda o indice das linhas através da função empty_spot
-    col = l[1] #guarda o indice das colunas através da função empty_spot
+    row = l[0] #guarda o indice das linhas atraves da funcao empty_spot
+    col = l[1] #guarda o indice das colunas atraves da funcao empty_spot
     
-    for i in range(1, 10): #i é número de 0 a 9
+    for i in range(1, 10): #i e numero de 0 a 9
 
-            if is_safe(tab,row,col,i) : #Verifica se o número i passa nas 
-                #condições básicas do jogo do Sudoko: ser único na linha, na coluna e na célula
+            if is_safe(tab,row,col,i) : #Verifica se o numero i passa nas 
+                #condicoes basicas do jogo do Sudoko: ser unico na linha, na coluna e na celula
                    
-                tab[row][col] = i   #Caso passe nas condições acima, coloca esse número i na entrada row,col do grid e depois 
-                #chama-se a função solver() de novo com o grid atualizado para esta entrada row col e tenta-se preencher 
-                # a próxima entrada que esteja a zero até ver se é possível preencher todo o grid.
+                tab[row][col] = i   #Caso passe nas condicoes acima, coloca esse numero i na entrada row,col do grid e depois 
+                #chama-se a funcao solver() de novo com o grid atualizado para esta entrada row col e tenta-se preencher 
+                # a proxima entrada que esteja a zero ate ver se e possivel preencher todo o grid.
                 
-                #Caso se chegue a um "dead end" em que fiquem zeros por preencher e já não é possível cumprir as regras, 
-                #repete-se o processo todo de novo porque na linha 98 se dá um reset na entrada inicial desta tentativa de grid resolvido e 
-                #como isto é um loop for, logo a próxima tentativa será diferente e serão tentadas todas as possibilidades.
+                #Caso se chegue a um "dead end" em que fiquem zeros por preencher e ja nao e possivel cumprir as regras, 
+                #repete-se o processo todo de novo porque na linha 98 se da um reset na entrada inicial desta tentativa de grid resolvido e 
+                #como isto e um loop for, logo a proxima tentativa sera diferente e serao tentadas todas as possibilidades.
                      
-                if(solver(tab)): #Recursiva ocorre,até que um grid seja preenchido sem deixar 
-                #zeros e onde se cumprem as regras básicas do jogo
+                if(solver(tab)): #Recursiva ocorre,ate que um grid seja preenchido sem deixar 
+                #zeros e onde se cumprem as regras basicas do jogo
                     #print(i[0])
                     return True
                 
@@ -154,7 +155,7 @@ def criar_tabuleiro(level):
                         
     return grid
                 
-#Função que dá print do resultado obtido na função solver
+#Funcao que da print do resultado obtido na funcao solver
 def get_tabuleiro(tab):
     puzzle = ''
     state = False
@@ -192,23 +193,18 @@ def get_tabuleiro(tab):
 
 if __name__=="__main__":
 
-    A = criar_tabuleiro(2)
-    print("Tabuleiro por resolver: \n")
-    get_tabuleiro(A)
-    #A =[[0 for x in range(9)]for y in range(9)]
+    #A = criar_tabuleiro(2)
+    #print("Tabuleiro por resolver: \n")
+    #get_tabuleiro(A)
     
-    #A = [[5,1,7,6,0,0,0,3,4],
-    # [2,0,9,0,0,4,0,0,0],
-    # [3,4,6,2,0,5,0,9,0],
-    # [6,0,2,0,0,0,0,1,0],
-    # [0,3,8,0,0,6,0,4,7],
-    # [0,0,0,0,0,0,0,0,0],
-    # [0,9,0,0,0,0,0,7,8],
-    # [7,0,3,4,0,0,5,6,0],
-    # [0,0,0,0,0,0,0,0,0]]
-      
-    if(solver(A)):
-            print("Tabuleiro Resolvido: \n")
-            get_tabuleiro(A)
-    else:
-            print("No solution exists")
+    run = True
+    while (run):
+        A = criar_tabuleiro(2)
+        copia_tab = copy.deepcopy(A)
+        if (solver(A)):
+            run = False
+            
+    print("Tabuleiro por resolver: \n")
+    get_tabuleiro(copia_tab)
+    print("Tabuleiro Resolvido: \n")
+    get_tabuleiro(A)
