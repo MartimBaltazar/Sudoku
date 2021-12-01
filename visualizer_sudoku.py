@@ -1,7 +1,8 @@
 import pygame
 import os
 import time
-from sudoky import criar_tabuleiro 
+from sudoky import solver
+from sudoky import criar_tabuleiro,empty_spot
 from sudoky import is_safe
 from sudoky import get_coluna
 from sudoky import get_celula
@@ -103,7 +104,42 @@ def draw_endgame():
     text2 = font3.render("Press R to restart the game", True, BLACK)  
     WIN.blit(text0,TITLE)
     WIN.blit(text2,DEFEATED)    
+
+def solver(grid,i=[0]):
     
+    i[0]+=1
+    l =[0, 0] #Inicializacao do indice das linhas e das colunas
+    
+    if (empty_spot(grid,l) == False):
+        return True
+    
+    row = l[0] #guarda o indice das linhas atraves da funcao empty_spot
+    col = l[1] #guarda o indice das colunas atraves da funcao empty_spot
+    pygame.event.pump()   
+    for i in range(1, 10): #i e numero de 0 a 9
+            if is_safe(grid,row,col,i) : #Verifica se o numero i passa nas 
+                #condicoes basicas do jogo do Sudoko: ser unico na linha, na coluna e na celula
+                global x, y
+                x = row
+                y = col               
+                grid[row][col] = i   
+                WIN.fill(WHITE)
+                draw_grid(grid)
+                draw_greenbox()
+                pygame.display.update()
+                pygame.time.delay(1)                
+                     
+                if(solver(grid)):
+                    return True
+                
+                grid[row][col] = 0 
+                WIN.fill(WHITE)
+                draw_grid(grid)
+                draw_redbox(1)
+                pygame.display.update()
+                pygame.time.delay(1)                   
+                
+    return False    
 
 def draw_grid(grid):
     WIN.fill(WHITE) #restore WIN
@@ -132,8 +168,9 @@ def main():
     run = True
     while run:
         if counter == 3:
-            draw_endgame()
-            state = True         
+            if solver(grid) == True:
+                state = True
+                draw_endgame()
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 run = False
@@ -179,6 +216,7 @@ def main():
                     WIN.fill(WHITE)
                     draw_menu(EASY,MEDIUM,HARD)
                     state = True 
+                    counter= 0
                 if val != 0:
                     if is_safe(grid,int(x),int(y),val):
                         draw_greenbox()
