@@ -7,6 +7,7 @@ from sudoky import is_safe
 from sudoky import get_coluna
 from sudoky import get_celula
 
+pygame.init()
 pygame.font.init()
 pygame.mixer.init()
 
@@ -24,12 +25,14 @@ WIN = pygame.display.set_mode((WIDTH, HEIGHT))
 pygame.display.set_caption("SUDOKU")
 img = pygame.image.load('image2.png')
 pygame.display.set_icon(img)
+background_image = pygame.image.load("gradient.jpg").convert()
  
 # Load test fonts for future use
 
 font1 = pygame.font.SysFont("comicsans", 40)
 font2 = pygame.font.SysFont("comicsans", 70)
 font3 = pygame.font.SysFont("comicsans", 20)
+font4 = pygame.font.SysFont("Atari", 40)
 
 def get_cord(pos):
     global x
@@ -37,56 +40,52 @@ def get_cord(pos):
     global y
     y = pos[1]//cell
 
-def draw_val(val):
-    BLANK = pygame.Rect(x * cell , y * cell , cell, cell)
-    pygame.draw.rect(WIN,WHITE,BLANK,0)        
+def draw_greenval(val):
+    BLANK = pygame.Rect(x * cell + 2 , y * cell + 2 , cell - 1.5, cell - 1.5)
+    pygame.draw.rect(WIN,GREEN,BLANK,0)        
     text1 = font1.render(str(val), 1, (0, 0, 0))
-    WIN.blit(text1, (x * cell + 15, y * cell + 15))   
-    
-# Highlight the cell selected
-def draw_redbox(counter):
-    circle1= (25+counter*30, 525)
-    circle_radius = 12
-    border_width = 0 
-    pygame.draw.circle(WIN, RED, circle1, circle_radius)    
-    for i in range(2):
-        pygame.draw.line(WIN, RED, (x * cell-3, (y + i)*cell), (x * cell + cell + 3, (y + i)*cell), 7)
-        pygame.draw.line(WIN, RED, ( (x + i)* cell, y * cell ), ((x + i) * cell, y * cell + cell), 7)  
+    WIN.blit(text1, (x * cell + 15, y * cell + 15)) 
 
-def draw_greenbox():
-    for i in range(2):
-        pygame.draw.line(WIN, GREEN, (x * cell-3, (y + i)*cell), (x * cell + cell + 3, (y + i)*cell), 7)
-        pygame.draw.line(WIN, GREEN, ( (x + i)* cell, y * cell ), ((x + i) * cell, y * cell + cell), 7)  
+def draw_redval(val):
+    BLANK = pygame.Rect(x * cell + 2 , y * cell + 2 , cell - 1.5, cell - 1.5)
+    pygame.draw.rect(WIN,RED,BLANK,0)        
+    text1 = font1.render(str(val), 1, (0, 0, 0))
+    WIN.blit(text1, (x * cell + 15, y * cell + 15)) 
+    
 
 def draw_menu(level1,level2,level3):
-    WIN.fill(GREEN)
+    WIN.blit(background_image, [0, 0])
     OPTIONS = pygame.Rect(425, 450, 40, 40)
     pygame.draw.rect(WIN,BLACK,OPTIONS,0)    
-    TITLE = pygame.Rect(CENTER,50,200,50)
-    pygame.draw.rect(WIN,GREEN,TITLE,0)
-    pygame.draw.rect(WIN,BLACK,level1,0)
-    pygame.draw.rect(WIN,BLACK,level2,0)
-    pygame.draw.rect(WIN,BLACK,level3,0)
-    text0 = font2.render("SUDOKU", True, BLACK)
-    text1 = font1.render("EASY", True, WHITE)
+    TITLE = pygame.Rect(CENTER,75,200,50)
+    #pygame.draw.rect(WIN,GREEN,TITLE,0)
+    #pygame.draw.rect(WIN,BLACK,level1,0)
+    #pygame.draw.rect(WIN,BLACK,level2,0)
+    #pygame.draw.rect(WIN,BLACK,level3,0)
+    text0 = font2.render("SUDOKU", True, WHITE)
+    text1 = font4.render("EASY", True, WHITE)
+    text_rect1 = text1.get_rect(center=(CENTER+100, CENTER+50))
     text2 = font1.render("MEDIUM", True, WHITE)
+    text_rect2 = text2.get_rect(center=(CENTER+100, CENTER+150))
     text3 = font1.render("HARD", True, WHITE)
+    text_rect3 = text3.get_rect(center=(CENTER+100, CENTER+250))
     text4 = font1.render("?", True, WHITE)
+    text_rect4 = text4.get_rect(center=(440, 470))
     WIN.blit(text0,TITLE)
-    WIN.blit(text1,level1)
-    WIN.blit(text2,level2)
-    WIN.blit(text3,level3)
-    WIN.blit(text4,OPTIONS)
+    WIN.blit(text1,text_rect1)
+    WIN.blit(text2,text_rect2)
+    WIN.blit(text3,text_rect3)
+    WIN.blit(text4,text_rect4)
     
 def show_commands():
     WIN.fill(WHITE)
-    WIN.fill(GREEN)
-    TITLE = pygame.Rect(CENTER,50,250,50)
+    WIN.blit(background_image, [0, 0])
+    TITLE = pygame.Rect(CENTER-30,50,250,50)
     R = pygame.Rect(CENTER,125, 250,20)
     CREDITS = pygame.Rect(CENTER, 175, 250, 20)    
-    pygame.draw.rect(WIN,GREEN,TITLE,0)
-    pygame.draw.rect(WIN,BLACK,R,0)
-    pygame.draw.rect(WIN,BLACK,CREDITS,0)
+    #pygame.draw.rect(WIN,GREEN,TITLE,0)
+    #pygame.draw.rect(WIN,BLACK,R,0)
+    #pygame.draw.rect(WIN,BLACK,CREDITS,0)
     text0 = font2.render("COMMANDS", True, BLACK)
     text1 = font3.render("R is used to go back to the main menu", True, WHITE)
     text2 = font3.render("Credits", True, WHITE)  
@@ -125,9 +124,8 @@ def solver(grid,i=[0]):
                 grid[row][col] = i   
                 WIN.fill(WHITE)
                 draw_grid(grid)
-                draw_greenbox()
                 pygame.display.update()
-                pygame.time.delay(1)                
+                pygame.time.delay(20)                
                      
                 if(solver(grid)):
                     return True
@@ -135,9 +133,9 @@ def solver(grid,i=[0]):
                 grid[row][col] = 0 
                 WIN.fill(WHITE)
                 draw_grid(grid)
-                draw_redbox(1)
+                draw_redval(i)
                 pygame.display.update()
-                pygame.time.delay(1)                   
+                pygame.time.delay(20)                   
                 
     return False    
 
@@ -145,9 +143,10 @@ def draw_grid(grid):
     WIN.fill(WHITE) #restore WIN
     for i in range (9):
         for j in range (9):
-            # Fill grid 
-            number = font1.render(str(grid[i][j]), 1, (0, 0, 0))
-            WIN.blit(number, (i * cell + 15, j * cell + 15))
+            if grid[i][j]!= 0:
+                pygame.draw.rect(WIN, GREEN, (i * cell, j * cell, cell + 1, cell + 1))
+                number = font1.render(str(grid[i][j]), 1, (0, 0, 0))
+                WIN.blit(number, (i * cell + 15, j * cell + 15))
     # Draw lines horizontally and vertically to form grid          
     for i in range(10):
         if i % 3 == 0 :
@@ -162,6 +161,10 @@ def main():
     MEDIUM = pygame.Rect(CENTER, 275, 200, 50)
     HARD = pygame.Rect(CENTER, 375, 200, 50)
     draw_menu(EASY,MEDIUM,HARD)
+    clock = pygame.time.Clock()
+    frame_count = 0
+    frame_rate = 60
+    start_time = 90    
     counter = 0
     val = 0
     state = True
@@ -219,12 +222,14 @@ def main():
                     counter= 0
                 if val != 0:
                     if is_safe(grid,int(x),int(y),val):
-                        draw_greenbox()
-                        draw_val(val)
+                        #draw_greenbox()
+                        draw_greenval(val)
                         grid[int(x)][int(y)]= val
                     else:
-                        draw_redbox(counter)
+                        #draw_redbox(counter)
+                        draw_redval(val)
                         counter += 1
+                
         pygame.display.update()
     pygame.display.quit()
     pygame.quit()
