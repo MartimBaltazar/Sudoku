@@ -62,8 +62,8 @@ def is_safe(grid,row,col,n):
 #Verifica se existe um zero no grid, ou seja, um lugar no grid que ainda nao foi preenchido
 def empty_spot(grid,l):
     
-    for row in range(0, len(grid)):
-        for col in range(0, len(grid)):
+    for col in range(0, len(grid)):
+        for row in range(0, len(grid)):
             if (grid[row][col] == 0):
                 l[0]= row
                 l[1]= col
