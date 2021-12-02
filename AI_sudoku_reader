@@ -7,13 +7,13 @@ from tensorflow import keras
 from tensorflow.keras.models import load_model
 from tensorflow.keras.datasets import mnist
 import os
-current_dir = os.getcwd()# Import mnist data stored in the following path: current directory -> mnist.npz
+current_dir = os.getcwd()# Importa os documentos da rede neural
 
 
 
 
 def plot_many_images(images, titles, rows=1, columns=2):
-	"""Plots each image in a given list as a grid structure. using Matplotlib."""
+	#Mostra varias imagens de uma lista
 	for i, image in enumerate(images):
 		plt.subplot(rows, columns, i+1)
 		plt.imshow(image, 'gray')
@@ -88,16 +88,16 @@ def display_contours(in_img, contours, colour=(0, 0, 255), thickness=2):
 
 
 def pre_processamento_imagem(img, skip_dilate=False):
-	"""Uses a blurring function, adaptive thresholding and dilation to expose the main features of an image."""
+	#Usa uma blurring function, thresholding adaptativo e dilatacao para expor as caracteristicas principais da imagem""
 
 	# Gaussian blur with a kernal size (height, width) of 9.
 	# Note that kernal sizes must be positive and odd and the kernel must be square.
 	proc = cv2.GaussianBlur(img.copy(), (9, 9), 0)
 
-	# Adaptive threshold usandos os 11 pixels mais proximos
+	# Threshold adaptativo usandos os 11 pixels mais proximos
 	proc = cv2.adaptiveThreshold(proc, 255, cv2.ADAPTIVE_THRESH_GAUSSIAN_C, cv2.THRESH_BINARY, 11, 2)
 
-	# Invert colours, so gridlines have non-zero pixel values.
+	# Inverte as cores
 	# Necessary to dilate the image, otherwise will look like erosion instead.
 	proc = cv2.bitwise_not(proc, proc)
 
@@ -110,7 +110,7 @@ def pre_processamento_imagem(img, skip_dilate=False):
 
 
 def encontrar_cantos_maior_poligno(img):
-	"""Finds the 4 extreme cantos of the largest contour in the image."""
+	#Encontra os quatro cantos do maior poligno que neste caso e o grid
 	opencv_version = cv2.__version__.split('.')[0]
 	if opencv_version == '3':
 		_, contours, h = cv2.findContours(img.copy(), cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)  # Find contours
