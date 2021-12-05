@@ -4,6 +4,7 @@ import time
 import sys
 from sudoky import criar_tabuleiro,empty_spot
 from sudoky import is_safe
+import copy
 
 pygame.init()
 pygame.font.init()
@@ -15,10 +16,11 @@ val = 0
 WIDTH, HEIGHT = 500,550
 CENTER = WIDTH // 2 - 100
 WHITE = (255,255,255)
-BLUE = (0,153,240)
+BLUE = (0,180,200)
 BLACK = (0,0,0)
 GREEN = (100,255,100)
-RED = (255, 0, 0)
+RED = (255, 55, 0)
+GRAY = (211,211,211)
 WIN = pygame.display.set_mode((WIDTH, HEIGHT))
 
 pygame.display.set_caption("SUDOKU")
@@ -26,6 +28,8 @@ img = pygame.image.load('image2.png')
 pygame.display.set_icon(img)
 background_image = pygame.image.load("blue-background.jpg").convert()
 background_sound = pygame.mixer.Sound("background.mp3")
+correct_sound = pygame.mixer.Sound("correct.mp3")
+wrong_sound = pygame.mixer.Sound("wrong.mp3")
 # Load test fonts for future use
 
 font1 = pygame.font.SysFont("pressstart2pvav7", 30)
@@ -39,14 +43,32 @@ def get_cord(pos):
     x = pos[0]//cell
     global y
     y = pos[1]//cell
+    
+    
+def draw_draftval(val):
+    BLANK = pygame.Rect(x * cell + 2 , y * cell + 2 , cell - 1.5, cell - 1.5)
+    pygame.draw.rect(WIN,GRAY,BLANK,0)        
+    text1 = numbers.render(str(val), 1, (0, 0, 0))
+    WIN.blit(text1, (x * cell + 15, y * cell + 15))
+    
+    
+def draw_blank():
+    BLANK = pygame.Rect(x * cell + 2 , y * cell + 2 , cell - 1.5, cell - 1.5)
+    pygame.draw.rect(WIN,WHITE,BLANK,0)        
+    text1 = numbers.render(" ", 1, (0, 0, 0))
+    WIN.blit(text1, (x * cell + 15, y * cell + 15))
 
-def draw_greenval(val):
+def draw_greenval(val,sound):
+    if sound:
+        pygame.mixer.Sound.play(correct_sound)
     BLANK = pygame.Rect(x * cell + 2 , y * cell + 2 , cell - 1.5, cell - 1.5)
     pygame.draw.rect(WIN,BLUE,BLANK,0)        
     text1 = numbers.render(str(val), 1, (0, 0, 0))
-    WIN.blit(text1, (x * cell + 15, y * cell + 15)) 
+    WIN.blit(text1, (x * cell + 15, y * cell + 15))
 
-def draw_redval(val,counter):
+def draw_redval(val,counter,sound):
+    if sound:
+        pygame.mixer.Sound.play(wrong_sound)
     text = font1.render("X " * (counter+1), 1, (255, 0, 0))
     WIN.blit(text, (20, 510)) 
     BLANK = pygame.Rect(x * cell + 2 , y * cell + 2 , cell - 1.5, cell - 1.5)
@@ -69,12 +91,15 @@ def draw_menu(level1,level2,level3):
     text_rect2 = text2.get_rect(center=(CENTER+100, CENTER+150))
     text3 = font1.render("HARD", True, WHITE)
     text_rect3 = text3.get_rect(center=(CENTER+100, CENTER+250))
+    text5 = font1.render("SCAN", True, WHITE)
+    text_rect5 = text5.get_rect(center=(CENTER+100, CENTER+350))    
     text4 = font1.render("?", True, WHITE)
     text_rect4 = text4.get_rect(center=(440, 470))
     WIN.blit(text0,TITLE)
     WIN.blit(text1,text_rect1)
     WIN.blit(text2,text_rect2)
     WIN.blit(text3,text_rect3)
+    WIN.blit(text5,text_rect5)
     WIN.blit(text4,text_rect4)
     
 def show_commands():
@@ -92,18 +117,6 @@ def show_commands():
     WIN.blit(text0,TITLE)
     WIN.blit(text1,R)
     WIN.blit(text2,CREDITS)    
-    
-def draw_endgame(grid):
-    WIN.blit(background_image, [0, 0])
-    TITLE = pygame.Rect(CENTER-50,50,250,50)
-    DEFEATED = pygame.Rect(CENTER,125, 250,20)    
-    pygame.draw.rect(WIN,GREEN,TITLE,0)
-    pygame.draw.rect(WIN,GREEN,DEFEATED,0)
-    text0 = font1.render("YOU WERE DEFEATED", True, BLACK)
-    text2 = font3.render("Press R to restart the game", True, BLACK)  
-    WIN.blit(text0,TITLE)
-    WIN.blit(text2,DEFEATED)
-    draw_grid(grid)
 
 def solver(grid,i=[0]):
     
@@ -134,13 +147,14 @@ def solver(grid,i=[0]):
                 grid[row][col] = 0 
                 WIN.fill(WHITE)
                 draw_grid(grid)
-                draw_redval(i,2)
+                draw_redval(i,2,False)
                 pygame.display.update()
                 pygame.time.delay(25)                   
                 
     return False    
 
 def draw_grid(grid):
+    state = False
     WIN.fill(WHITE) #restore WIN
     for i in range (9):
         for j in range (9):
@@ -155,7 +169,17 @@ def draw_grid(grid):
         else:
             thick = 2
         pygame.draw.line(WIN, (0, 0, 0), (0, i * cell), (500, i * cell), thick)
-        pygame.draw.line(WIN, (0, 0, 0), (i * cell, 0), (i * cell, 500), thick)    
+        pygame.draw.line(WIN, (0, 0, 0), (i * cell, 0), (i * cell, 500), thick)
+    
+    for i in range(9):
+        for j in range(9):
+            if (grid[i][j] == 0):
+                state = True
+    if state == False:
+        text2 = font1.render("GGS,TRY AGAIN!", True, BLACK)
+        text_rect2 = text2.get_rect(center=(260,530))
+        WIN.blit(text2,text_rect2)
+        
 
 
 def main():
@@ -166,7 +190,6 @@ def main():
     counter = 0
     val = 0
     grid = []
-    pygame.mixer.Sound.play(background_sound)
     state = True
     run = True
     while run:
@@ -174,7 +197,6 @@ def main():
             if solver(grid) == True:
                 state = True
                 draw_grid(grid)
-                draw_endgame(grid)
                 counter = 0
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
@@ -185,13 +207,20 @@ def main():
                     mouseY = event.pos[1]
                     if CENTER < mouseX < (CENTER + 200) and 175 < mouseY < 225:
                         grid = criar_tabuleiro(1)
+                        copy_grid = copy.deepcopy(grid)
                         draw_grid(grid)
                     if CENTER < mouseX < (CENTER + 200) and 275 < mouseY < 325:
                         grid = criar_tabuleiro(2)
+                        copy_grid = copy.deepcopy(grid)
                         draw_grid(grid)
                     if CENTER < mouseX < (CENTER + 200) and 375 < mouseY < 425:
-                        grid = criar_tabuleiro(3)  
+                        grid = criar_tabuleiro(3)
+                        copy_grid = copy.deepcopy(grid)
                         draw_grid(grid)
+                    if CENTER < mouseX < (CENTER + 200) and 475 < mouseY < 525:
+                        grid = criar_tabuleiro(3)
+                        copy_grid = copy.deepcopy(grid)
+                        draw_grid(grid)                    
                     elif 425 < mouseX < 465 and 450 < mouseY < 490:
                         show_commands()           
                     state = False
@@ -223,18 +252,24 @@ def main():
                     state = True 
                     counter = 0
                 if val != 0:
-                    if is_safe(grid,int(x),int(y),val):
-                        #draw_greenbox()
-                        draw_greenval(val)
-                        grid[int(x)][int(y)]= val
+                        draw_draftval(val)
+                        copy_grid[int(x)][int(y)]= val
                         val = 0
+                if event.key == pygame.K_RETURN:
+                    val = copy_grid[int(x)][int(y)]
+                    if is_safe(grid,int(x),int(y),val):
+                        draw_greenval(val,True)
+                        grid[int(x)][int(y)] = val
                     else:
-                        #draw_redbox(counter)
-                        draw_redval(val,counter)
+                        draw_redval(val,counter,True)
                         counter += 1
-                        val = 0     
+                    val = 0
+                if event.key == pygame.K_BACKSPACE:
+                    copy_grid[int(x)][int(y)] = 0
+                    grid[int(x)][int(y)] = 0
+                    draw_blank()
+    
         pygame.display.update()
-    pygame.mixer.music.stop()
     pygame.display.quit()
     pygame.quit()
     sys.exit()
