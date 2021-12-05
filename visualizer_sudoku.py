@@ -5,6 +5,7 @@ import sys
 from sudoky import criar_tabuleiro,empty_spot
 from sudoky import is_safe
 import copy
+from ai_solver import*
 
 pygame.init()
 pygame.font.init()
@@ -27,7 +28,7 @@ pygame.display.set_caption("SUDOKU")
 img = pygame.image.load('image2.png')
 pygame.display.set_icon(img)
 background_image = pygame.image.load("blue-background.jpg").convert()
-background_sound = pygame.mixer.Sound("background.mp3")
+#background_sound = pygame.mixer.Sound("background.mp3")
 correct_sound = pygame.mixer.Sound("correct.mp3")
 wrong_sound = pygame.mixer.Sound("wrong.mp3")
 # Load test fonts for future use
@@ -218,7 +219,10 @@ def main():
                         copy_grid = copy.deepcopy(grid)
                         draw_grid(grid)
                     if CENTER < mouseX < (CENTER + 200) and 475 < mouseY < 525:
-                        grid = criar_tabuleiro(3)
+                        grid1 = main_ai()
+                        print(grid)
+                        zipped_rows = zip(*grid1)
+                        grid = [list(row) for row in zipped_rows]
                         copy_grid = copy.deepcopy(grid)
                         draw_grid(grid)                    
                     elif 425 < mouseX < 465 and 450 < mouseY < 490:
