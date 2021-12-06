@@ -33,10 +33,10 @@ correct_sound = pygame.mixer.Sound("correct.mp3")
 wrong_sound = pygame.mixer.Sound("wrong.mp3")
 # Load test fonts for future use
 
-font1 = pygame.font.SysFont("pressstart2pvav7", 30)
-font2 = pygame.font.SysFont("pressstart2pvav7", 50)
+font1 = pygame.font.SysFont("PRESSSTART2P", 30)
+font2 = pygame.font.SysFont("PRESSSTART2P", 50)
 numbers = pygame.font.SysFont("None", 40)
-font3 = pygame.font.SysFont("pressstart2pvav7", 9)
+font3 = pygame.font.SysFont("PRESSSTART2P", 9)
 font4 = pygame.font.SysFont("Atari", 40)
 
 def get_cord(pos):
@@ -114,9 +114,15 @@ def show_commands():
     #pygame.draw.rect(WIN,BLACK,CREDITS,0)
     text0 = font1.render("COMMANDS", True, WHITE)
     text1 = font3.render("- R is used to go back to the main menu", True, WHITE)
+    text3 = font3.render("Authors: Duarte Morais and Martim Baltazar", True, WHITE)
+    text4 = font3.render("if Mecanica + Informatica == True:", True, WHITE)
+    text5 = font3.render("      job = good job;        ", True, WHITE)
     text2 = font3.render("- Credits", True, WHITE)  
     WIN.blit(text0,TITLE)
     WIN.blit(text1,R)
+    WIN.blit(text3,R)
+    WIN.blit(text4,R)
+    WIN.blit(text5,R)
     WIN.blit(text2,CREDITS)    
 
 def solver(grid,i=[0]):
@@ -197,7 +203,7 @@ def main():
         if counter == 3:
             if solver(copy_grid2) == True:
                 state = True
-                draw_grid(grid)
+                draw_grid(copy_grid2)
                 counter = 0
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
@@ -215,6 +221,7 @@ def main():
                         grid = criar_tabuleiro(2)
                         copy_grid = copy.deepcopy(grid)
                         copy_grid2 = copy.deepcopy(grid)
+                        
                         draw_grid(grid)
                     if CENTER < mouseX < (CENTER + 200) and 375 < mouseY < 425:
                         grid = criar_tabuleiro(3)
@@ -223,7 +230,6 @@ def main():
                         draw_grid(grid)
                     if CENTER < mouseX < (CENTER + 200) and 475 < mouseY < 525:
                         grid1 = main_ai()
-                        print(grid)
                         zipped_rows = zip(*grid1)
                         grid = [list(row) for row in zipped_rows]
                         copy_grid = copy.deepcopy(grid)

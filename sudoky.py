@@ -125,8 +125,10 @@ def criar_tabuleiro(level):
     #20pistas e 61 zeros - nivel 3
     else:
         limit = 61
-    
-    grid = [[0,0,0,0,0,0,0,0,0],
+    run = True
+    while run:
+        m=100
+        grid = [[0,0,0,0,0,0,0,0,0],
      [0,0,0,0,0,0,0,0,0],
      [0,0,0,0,0,0,0,0,0],
      [0,0,0,0,0,0,0,0,0],
@@ -135,23 +137,24 @@ def criar_tabuleiro(level):
      [0,0,0,0,0,0,0,0,0],
      [0,0,0,0,0,0,0,0,0],
      [0,0,0,0,0,0,0,0,0]]
-
-    #ESTE WHILE DEMOROU 1H A SER FEITOOOOOOOOOOOO
-    #mas funciona bem tho
-    m=100
-    while m > limit:
-        m = 0
-        for i in range(9):
-            m = m + grid[i].count(0)
-        
-        for i in range(9):
+        while m > limit:
+            m = 0
+            for i in range(9):
+                m = m + grid[i].count(0)
             
-            s = random.randint(0,int(len(lista))-1)
-            a = lista[s]
-            for j in range(9):
-                if is_safe(grid,i,j,a):
-                    grid[i][j] = a
-        
+            for i in range(9):
+                
+                s = random.randint(0,int(len(lista))-1)
+                a = lista[s]
+                for j in range(9):
+                    if is_safe(grid,i,j,a):
+                        grid[i][j] = a
+        copia = copy.deepcopy(grid)
+        print("new : \n")
+        get_tabuleiro(copia)
+        if solver(copia):
+            run= False
+            
                         
     return grid
                 
@@ -193,18 +196,12 @@ def get_tabuleiro(tab):
 
 if __name__=="__main__":
 
-    #A = criar_tabuleiro(2)
-    #print("Tabuleiro por resolver: \n")
-    #get_tabuleiro(A)
-    
-    run = True
-    while (run):
-        A = criar_tabuleiro(2)
-        copia_tab = copy.deepcopy(A)
-        if (solver(A)):
-            run = False
-            
+    A = criar_tabuleiro(2)
     print("Tabuleiro por resolver: \n")
-    get_tabuleiro(copia_tab)
-    print("Tabuleiro Resolvido: \n")
     get_tabuleiro(A)
+    
+    if (solver(A)):
+        print("Tabuleiro Resolvido: \n")
+        get_tabuleiro(A)
+    else:
+        print("No solution exists") 

@@ -6,6 +6,14 @@ import tensorflow as tf
 from tensorflow import keras
 from tensorflow.keras.models import load_model
 from tensorflow.keras.datasets import mnist
+from tensorflow.keras.layers.experimental.preprocessing import Rescaling
+from keras.datasets import cifar10
+from keras.preprocessing.image import ImageDataGenerator
+from keras.models import Sequential
+from keras.layers import Dense, Dropout, Activation, Flatten
+from keras.layers import Conv2D, MaxPooling2D
+
+
 import os
 current_dir = os.getcwd()# Import mnist data stored in the following path: current directory -> mnist.npz
 
@@ -379,6 +387,7 @@ def identify_number(image):
     # Decide if to load an existing model or to train a new one
 
     return image_resize_2
+
 def treinar():
     train_new_model = True
 
@@ -396,17 +405,29 @@ def treinar():
         # Add one flattened input layer for the pixels
         # Add two dense hidden layers
         # Add one dense output layer for the 10 digits
-        model = tf.keras.models.Sequential()
-        model.add(tf.keras.layers.Flatten())
-        model.add(tf.keras.layers.Dense(units=128, activation=tf.nn.relu))
-        model.add(tf.keras.layers.Dense(units=128, activation=tf.nn.relu))
-        model.add(tf.keras.layers.Dense(units=10, activation=tf.nn.softmax))
+        model = tf.keras.Sequential(
+            [
+			Rescaling(1. / 255, input_shape=(28, 28,1)),
+			Conv2D(32, 3, padding='same', activation='relu'),
+			MaxPooling2D(),
+			Conv2D(64, 3, padding='same', activation='relu'),
+			MaxPooling2D(),
+			Conv2D(128, 3, padding='same', activation='relu'),
+			MaxPooling2D(),
+			Flatten(),
+			Dense(256, activation='relu'),
+			Dropout(0.5),
+			Dense(10, activation='softmax')
+   			]
+        )
+        model.compile(optimizer='adam', loss='sparse_categorical_crossentropy', metrics=['accuracy'])
+        model.fit(X_train, y_train, epochs=2)
 
         # Compiling and optimizing model
-        model.compile(optimizer='adam', loss='sparse_categorical_crossentropy', metrics=['accuracy'])
+        #model.compile(optimizer='adam', loss='sparse_categorical_crossentropy', metrics=['accuracy'])
 
         # Training the model
-        model.fit(X_train, y_train, epochs=3)
+        #model.fit(X_train, y_train, epochs=3)
 
         # Evaluating the model
         val_loss, val_acc = model.evaluate(X_test, y_test)
@@ -418,86 +439,10 @@ def treinar():
     else:
         # Load the model
         model = tf.keras.models.load_model('handwritten_digits.model')
+        
     return model
 
-# so usar se o tensorflow funcionar
-    
-#if __name__ == '__main__':
-    
-    train_new_model = True
 
-    if train_new_model:
-        # Loading the MNIST data set with samples and splitting it
-        
-        
-        (X_train, y_train), (X_test, y_test) = mnist.load_data(path=current_dir+'/mnist.npz')
-
-        # Normalizing the data (making length = 1)
-        X_train = tf.keras.utils.normalize(X_train, axis=1)
-        X_test = tf.keras.utils.normalize(X_test, axis=1)
-
-        # Create a neural network model
-        # Add one flattened input layer for the pixels
-        # Add two dense hidden layers
-        # Add one dense output layer for the 10 digits
-        model = tf.keras.models.Sequential()
-        model.add(tf.keras.layers.Flatten())
-        model.add(tf.keras.layers.Dense(units=128, activation=tf.nn.relu))
-        model.add(tf.keras.layers.Dense(units=128, activation=tf.nn.relu))
-        model.add(tf.keras.layers.Dense(units=10, activation=tf.nn.softmax))
-
-        # Compiling and optimizing model
-        model.compile(optimizer='adam', loss='sparse_categorical_crossentropy', metrics=['accuracy'])
-
-        # Training the model
-        model.fit(X_train, y_train, epochs=3)
-
-        # Evaluating the model
-        val_loss, val_acc = model.evaluate(X_test, y_test)
-        print(val_loss)
-        print(val_acc)
-
-        # Saving the model
-        #model.save('handwritten_digits.model')
-    else:
-        # Load the model
-        model = tf.keras.models.load_model('handwritten_digits.model')
-        
-    image_path = 'sudoko.png'
-    image_pre_AI = grid_pronto_para_AI(image_path)
-    image_pre_AI_2 = cv2.resize(image_pre_AI, (450,450))
-    #quadrado1 = image_pre_AI_2[(int(450/3)):(int(450/9)),(int(450/3)):(int((450*3)/(9)))]
- 
-    
-    # Load custom images and predict them
-    
-    #mostrar_imagem(quadrado1)
-    grid = np.zeros([9,9])
-    for i in range(9):
-        for j in range(9):
-            #image = image_pre_AI_2[i*50:(i+1)*50,j*50:(j+1)*50]
-            if image_pre_AI_2.sum() > 25000:    
-
-                quadrado_atual = image_pre_AI_2[(int(450*(i)/9)):(int((450*(i+1))/9)),(int((450*(j))/9)):(int((450*(j+1))/9))]
-                number_of_black_pix = np.sum(image_pre_AI_2 == 0)
-                if number_of_black_pix > 45 :
-                    grid[i][j] = 0
-                    print("deu zero")
-                image_resize = cv2.resize(quadrado_atual, (28,28)) 
-                mostrar_imagem(image_resize)
-                image_resize_2 = image_resize.reshape(1,1,28,28)
-                mostrar_imagem(image_resize_2)
-                grid[i][j] = model.predict(image_resize_2)
-                print("The number is probably a {}".format(np.argmax(grid[i][j])))
-                plt.imshow(quadrado_atual[0], cmap=plt.cm.binary)
-                plt.show()
-            else:
-                grid[i][j] = 0    
-    grid =  grid.astype(int)
-    print(grid)
     
 
-    #mostrar_imagem(image_pre_AI)
-    #predictions = model.predict(image_pre_AI)
-    
     
