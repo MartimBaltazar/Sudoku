@@ -195,7 +195,7 @@ def main():
     run = True
     while run:
         if counter == 3:
-            if solver(grid) == True:
+            if solver(copy_grid2) == True:
                 state = True
                 draw_grid(grid)
                 counter = 0
@@ -209,14 +209,17 @@ def main():
                     if CENTER < mouseX < (CENTER + 200) and 175 < mouseY < 225:
                         grid = criar_tabuleiro(1)
                         copy_grid = copy.deepcopy(grid)
+                        copy_grid2 = copy.deepcopy(grid)
                         draw_grid(grid)
                     if CENTER < mouseX < (CENTER + 200) and 275 < mouseY < 325:
                         grid = criar_tabuleiro(2)
                         copy_grid = copy.deepcopy(grid)
+                        copy_grid2 = copy.deepcopy(grid)
                         draw_grid(grid)
                     if CENTER < mouseX < (CENTER + 200) and 375 < mouseY < 425:
                         grid = criar_tabuleiro(3)
                         copy_grid = copy.deepcopy(grid)
+                        copy_grid2 = copy.deepcopy(grid)
                         draw_grid(grid)
                     if CENTER < mouseX < (CENTER + 200) and 475 < mouseY < 525:
                         grid1 = main_ai()
@@ -224,6 +227,7 @@ def main():
                         zipped_rows = zip(*grid1)
                         grid = [list(row) for row in zipped_rows]
                         copy_grid = copy.deepcopy(grid)
+                        copy_grid2 = copy.deepcopy(grid)
                         draw_grid(grid)                    
                     elif 425 < mouseX < 465 and 450 < mouseY < 490:
                         show_commands()           
